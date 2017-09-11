@@ -1,0 +1,67 @@
+{
+  "name": "node-essential",
+  "version": "1.0.0",
+  "description": "Base environment for start nodejs project",
+  "main": "index.js",
+  "scripts": {
+    "flow": "flow",
+    "dev": "flow && node dev.js",
+    "start": "rimraf ./build && babel -d ./build ./src -s && node ./build/server.js",
+    "lint:js": "eslint ./src",
+    "lint-staged": "lint-staged",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "KuzyshynI",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "escope": "^3.6.0",
+    "eslint": "^4.5.0",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-config-airbnb-flow": "^1.0.2",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-import": "^2.7.0",
+    "flow-bin": "^0.54.0",
+    "lint-staged": "^4.0.4",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.6.1"
+  },
+  "lint-staged": {
+    "*.js": "eslint"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "airbnb-base",
+      "airbnb-flow",
+      "prettier"
+    ],
+    "env": {
+      "node": true
+    }
+  },
+  "precommit": "lint-staged",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-register": "^6.26.0",
+    "lodash": "^4.17.4",
+    "rimraf": "^2.6.1"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      [
+        "flow"
+      ]
+    ]
+  }
+}
