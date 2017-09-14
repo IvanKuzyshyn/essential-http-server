@@ -11,6 +11,6 @@ server.on('connection', socket => {
   });
 });
 
-server.listen(config.port || process.env.PORT, () => {
+server.listen({port: config.port || process.env.PORT}, () => {
   console.log('opened server on', server.address());
 });
