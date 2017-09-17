@@ -15,6 +15,8 @@
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-syntax-class-properties": "^6.13.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "escope": "^3.6.0",
     "eslint": "^4.5.0",
     "eslint-config-airbnb-base": "^11.3.2",
@@ -62,6 +64,10 @@
       [
         "flow"
       ]
+    ],
+    "plugins": [
+      "syntax-class-properties",
+      "transform-object-rest-spread"
     ]
   }
 }
