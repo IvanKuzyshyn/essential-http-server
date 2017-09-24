@@ -1,4 +1,6 @@
 /* @flow */
+import fs from 'fs';
+import Path from 'path';
 //import RequestHandlerInterface from './interface/RequestHandlerInterface';
 import {
   REQUEST_HEADER_REGEXP,
@@ -10,11 +12,15 @@ export default class HttpServerRequestHandler {
   defaultConfig: Object;
 
   defaultConfig: {
-    charset: 'utf-8',
+    charset: 'utf-8'
   };
 
   constructor(options?: Object = {}) {
     this.config = { ...this.defaultConfig, ...options };
+
+    if(!('rootDir' in this.config)) {
+      throw new Error('You have to provide "rootDir" as option');
+    }
   }
 
   processRequest(data: Object) {
@@ -23,10 +29,10 @@ export default class HttpServerRequestHandler {
     const decodedData = data.toString(charset);
     const parsedData = this.parseRequest(decodedData);
 
-    console.log('PARSED\r\n', parsedData);
+    const requestPath = this.resolvePath(this.config.rootDir + parsedData.uri);
   }
 
-  parseRequest(request: string) {
+  parseRequest(request: string): Object {
     let performedRequest = { headers: {} };
     const requestLines = request.trim().split('\r\n');
 
@@ -46,5 +52,21 @@ export default class HttpServerRequestHandler {
     });
 
     return performedRequest;
+  }
+
+  resolvePath(path: string) {
+    console.log('REQUIRED PATH', path);
+      fs.open(path, 'r', (err, fd) => {
+          if (err) {
+              if (err.code === 'ENOENT') {
+                  console.error('file does not exist');
+                  return;
+              }
+
+              throw err;
+          }
+
+          console.log('file exists', fd);
+      });
   }
 }
