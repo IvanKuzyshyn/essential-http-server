@@ -12,13 +12,13 @@ export default class HttpServerRequestHandler {
   defaultConfig: Object;
 
   defaultConfig: {
-    charset: 'utf-8'
+    charset: 'utf-8',
   };
 
   constructor(options?: Object = {}) {
     this.config = { ...this.defaultConfig, ...options };
 
-    if(!('rootDir' in this.config)) {
+    if (!('rootDir' in this.config)) {
       throw new Error('You have to provide "rootDir" as option');
     }
   }
@@ -56,17 +56,17 @@ export default class HttpServerRequestHandler {
 
   resolvePath(path: string) {
     console.log('REQUIRED PATH', path);
-      fs.open(path, 'r', (err, fd) => {
-          if (err) {
-              if (err.code === 'ENOENT') {
-                  console.error('file does not exist');
-                  return;
-              }
+    fs.open(path, 'r', (err, fd) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          console.error('file does not exist');
+          return;
+        }
 
-              throw err;
-          }
+        throw err;
+      }
 
-          console.log('file exists', fd);
-      });
+      console.log('file exists', fd);
+    });
   }
 }
