@@ -10,7 +10,7 @@ server.on('connection', socket => {
   socket.on('data', data => {
     const dataHandler = new RequestHandler();
 
-    dataHandler.processData(data);
+    dataHandler.processRequest(data);
   });
 });
 
