@@ -1,11 +1,13 @@
 /* @flow */
 import fs from 'fs';
-import Path from 'path';
+import path from 'path';
 //import RequestHandlerInterface from './interface/RequestHandlerInterface';
 import {
   REQUEST_HEADER_REGEXP,
   REQUEST_START_LINE_REGEXP,
 } from './constants/parser';
+import setContentType from './helper/contentType';
+
 
 export default class HttpServerRequestHandler {
   config: Object;
@@ -16,6 +18,7 @@ export default class HttpServerRequestHandler {
   };
 
   constructor(options?: Object = {}) {
+    // TODO Refactor
     this.config = { ...this.defaultConfig, ...options };
 
     if (!('rootDir' in this.config)) {
@@ -23,13 +26,38 @@ export default class HttpServerRequestHandler {
     }
   }
 
-  processRequest(data: Object) {
+  processRequest(socket: Object, data: Object): void {
     const { charset } = this.config;
 
     const decodedData = data.toString(charset);
     const parsedData = this.parseRequest(decodedData);
+    const requestPath = this.config.rootDir + parsedData.uri;
 
-    const requestPath = this.resolvePath(this.config.rootDir + parsedData.uri);
+    this.getFileByPath(requestPath)
+      .then(data => {
+        console.log('DATA', data);
+        const extension = path.extname(requestPath).replace('.', '');
+        const response = this.prepareResponse(parsedData, data, setContentType(extension));
+        console.log('RESPONSE', response);
+        this.send(socket, response);
+      })
+        .catch(error => {
+          console.log('ERROR', error);
+          const response = this.prepareError(parsedData, 404, 'Page not found!');
+          this.send(socket, response);
+        });
+  }
+
+  send(connection: Object, response: Object): void {
+    connection.write(`${response.version}: ${response.code}\r\n`);
+
+    for(let header in response.header) {
+      connection.write(`${header}: ${response.headers[header]}\r\n`);
+    }
+
+    connection.write('\r\n');
+
+    connection.end(response.body);
   }
 
   parseRequest(request: string): Object {
@@ -54,19 +82,41 @@ export default class HttpServerRequestHandler {
     return performedRequest;
   }
 
-  resolvePath(path: string) {
-    console.log('REQUIRED PATH', path);
-    fs.open(path, 'r', (err, fd) => {
-      if (err) {
-        if (err.code === 'ENOENT') {
-          console.error('file does not exist');
+  getFileByPath(path: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      fs.open(path, 'r', (err, fd) => {
+        if(err) {
+          reject(err);
+
           return;
         }
 
-        throw err;
-      }
+        fs.readFile(path, (err, data) => {
+          if(err) {
+            reject(err);
 
-      console.log('file exists', fd);
+            return;
+          }
+
+          resolve(data);
+        });
+      });
     });
   }
+
+  prepareResponse(request: Object, data: ArrayBuffer, type: string): Object {
+    request.code = 200;
+      request.body = data;
+    request.headers['content-type'] = type;
+
+    return request;
+  }
+
+  prepareError(request: Object, code: number, body: string): Object {
+    request.code = code;
+    request.body = body;
+
+    return request;
+  }
+
 }

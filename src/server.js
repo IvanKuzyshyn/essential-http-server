@@ -12,7 +12,7 @@ server.on('connection', socket => {
         rootDir: resolvePath(__dirname, './../public')
     });
 
-    dataHandler.processRequest(data);
+    dataHandler.processRequest(socket, data);
   });
 });
 
