@@ -1,7 +1,7 @@
 {
   "name": "node-essential",
   "version": "1.0.0",
-  "description": "Base environment for start nodejs project",
+  "description": "Example for understanding how server request/response formatting works",
   "main": "index.js",
   "scripts": {
     "flow": "flow",
@@ -24,6 +24,7 @@
     "eslint-config-airbnb-base": "^11.3.2",
     "eslint-config-airbnb-flow": "^1.0.2",
     "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-import": "^2.7.0",
     "flow-bin": "^0.54.0",
     "lint-staged": "^4.0.4",

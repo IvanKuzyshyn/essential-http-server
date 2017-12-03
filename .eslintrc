@@ -5,6 +5,7 @@
     "airbnb-flow",
     "prettier"
   ],
+  "plugins": ["flowtype"],
   "parser": "babel-eslint",
   "globals": {
     "global": true
@@ -12,5 +13,8 @@
   "env": {
     "node": true,
     "es6": true
+  },
+  "rules": {
+    "func-names": ["error", "as-needed"]
   }
 }
