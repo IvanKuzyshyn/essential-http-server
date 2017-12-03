@@ -35,15 +35,14 @@ export default class ResponseFormatter {
 
         request.headers[property] = value;
       } else {
-        console.warn('Undefined part of request object', part);
+        global.console.warn('Undefined part of request object', part);
       }
     });
 
     return request;
   };
 
-  getRequestedFileByPath = (filePath) => {
-    return new Promise((resolve, reject) => {
+  getRequestedFileByPath = (filePath) => new Promise((resolve, reject) => {
       fs.open(filePath, 'r', error => {
         if(error) {
           reject(error);
@@ -62,7 +61,6 @@ export default class ResponseFormatter {
         });
       });
     });
-  };
 
   buildResponse = (request, socket) => {
     const requestFile = this.config.rootDir + request.uri;
@@ -82,19 +80,21 @@ export default class ResponseFormatter {
   };
 
   prepareResponse = (request, body, code, requestFileType = null) => {
+    let response = {...request};
+
     if(requestFileType) {
-      request.headers['content-type'] = setContentType(requestFileType);
+      response.headers['content-type'] = setContentType(requestFileType);
     }
 
-    request = {...request, body, code};
+    response = {...response, body, code};
 
-    return request;
+    return response;
   };
 
   sendResponse = (response, socket) => {
     socket.write(`${response.version}: ${response.code}\r\n`);
 
-    for(let header in response.header) {
+    for(const header in response.header) {
       socket.write(`${header}: ${response.headers[header]}\r\n`);
     }
 

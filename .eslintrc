@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "extends": [
+    "airbnb-base",
+    "airbnb-flow",
+    "prettier"
+  ],
+  "parser": "babel-eslint",
+  "globals": {
+    "global": true
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  }
+}

@@ -15,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.3",
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -32,17 +33,6 @@
   "lint-staged": {
     "*.js": "eslint"
   },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "airbnb-base",
-      "airbnb-flow",
-      "prettier"
-    ],
-    "env": {
-      "node": true
-    }
-  },
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.0",
@@ -50,25 +40,5 @@
     "babel-register": "^6.26.0",
     "lodash": "^4.17.4",
     "rimraf": "^2.6.1"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ],
-      [
-        "flow"
-      ]
-    ],
-    "plugins": [
-      "syntax-class-properties",
-      "transform-object-rest-spread",
-      "transform-class-properties"
-    ]
   }
 }

@@ -35,13 +35,13 @@ export default class EssentialHttpServer {
 
   start = () => {
     if(this.isStarted) {
-      console.warn('Server has been already started!');
+      global.console.warn('Server has been already started!');
 
       return;
     }
 
     this.server.listen({port: this.config.port}, () => {
-      console.log(`Server is running. PORT ${this.server.address()}`);
+      global.console.log(`Server is running. PORT ${this.server.address()}`);
     });
   };
 
