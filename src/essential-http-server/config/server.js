@@ -1,4 +1,5 @@
 // @flow
+
 import type { ServerConfigType } from '../type/serverTypes';
 
 const config: ServerConfigType = {

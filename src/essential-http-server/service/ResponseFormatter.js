@@ -29,12 +29,11 @@ export default class ResponseFormatter {
     this.buildResponse(request, socket);
   };
 
+  // TODO: Correct set up ParsedRequestType
   parseRequest = (data: ArrayBuffer): Object => {
     // $FlowFixMe
     const decodedRequest = data.toString(this.config.charset);
-    let request = {
-      headers: {},
-    };
+    let request = {};
     const requestParts = decodedRequest.trim().split('\r\n');
 
     requestParts.forEach(part => {
@@ -53,6 +52,10 @@ export default class ResponseFormatter {
       }
     });
 
+    if (request.uri === '/') {
+      request.uri = '/index.html';
+    }
+
     return request;
   };
 
@@ -68,7 +71,8 @@ export default class ResponseFormatter {
       }
     });
 
-  buildResponse = async (request: Object, socket: net$Socket): void => {
+  buildResponse = async (request: Object, socket: net$Socket) => {
+    console.log('URI', request.uri);
     const requestFile = this.config.rootDir + request.uri;
 
     try {
