@@ -9,7 +9,8 @@
     "start": "rimraf ./build && babel -d ./build ./src -s && node ./build/server.js",
     "lint:js": "eslint ./src",
     "lint-staged": "lint-staged",
-    "test": "jest"
+    "test": "jest",
+    "autotests": "jest && node ./tests/autotests/index.js"
   },
   "author": "KuzyshynI",
   "license": "ISC",
@@ -41,6 +42,7 @@
     "babel-preset-flow": "^6.23.0",
     "babel-register": "^6.26.0",
     "lodash": "^4.17.4",
+    "puppeteer": "^0.13.0",
     "rimraf": "^2.6.1"
   }
 }
