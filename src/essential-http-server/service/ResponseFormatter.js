@@ -33,7 +33,9 @@ export default class ResponseFormatter {
   parseRequest = (data: ArrayBuffer): Object => {
     // $FlowFixMe
     const decodedRequest = data.toString(this.config.charset);
-    let request = {};
+    let request = {
+      headers: {},
+    };
     const requestParts = decodedRequest.trim().split('\r\n');
 
     requestParts.forEach(part => {
@@ -41,7 +43,8 @@ export default class ResponseFormatter {
         // $FlowFixMe
         const [, method, uri, version] = part.match(REQUEST_START_LINE_REGEXP);
 
-        request = { ...request, method, uri, version };
+        request = { ...request, method, version };
+        request.uri = uri === '/' ? '/index.html' : uri;
       } else if (REQUEST_HEADER_REGEXP.test(part)) {
         // $FlowFixMe
         const [, property, value] = part.match(REQUEST_HEADER_REGEXP);
@@ -51,10 +54,6 @@ export default class ResponseFormatter {
         global.console.warn('Undefined part of request object', part);
       }
     });
-
-    if (request.uri === '/') {
-      request.uri = '/index.html';
-    }
 
     return request;
   };
