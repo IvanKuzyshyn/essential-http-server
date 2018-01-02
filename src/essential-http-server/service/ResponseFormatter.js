@@ -68,7 +68,7 @@ export default class ResponseFormatter {
       }
     });
 
-  buildResponse = async (request: Object, socket: net$Socket) => {
+  buildResponse = async (request: Object, socket: net$Socket): void => {
     const requestFile = this.config.rootDir + request.uri;
 
     try {
