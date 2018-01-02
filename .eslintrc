@@ -8,7 +8,8 @@
   "plugins": ["flowtype"],
   "parser": "babel-eslint",
   "globals": {
-    "global": true
+    "global": true,
+    "jest": true
   },
   "env": {
     "node": true,
