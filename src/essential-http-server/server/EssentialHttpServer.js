@@ -1,6 +1,7 @@
 /* @flow */
+
 import net from 'net';
-import defaultConfig  from '../config/server';
+import defaultConfig from '../config/server';
 import ResponseFormatter from '../service/ResponseFormatter';
 import type { ServerConfigType } from '../type/serverTypes';
 
@@ -10,7 +11,7 @@ export const STATUS_HALT = 'halt';
 export default class EssentialHttpServer {
   config: ServerConfigType;
   isStarted: boolean;
-  server: Object;
+  server: net$Server;
 
   static isStarted = false;
 
@@ -23,7 +24,7 @@ export default class EssentialHttpServer {
   construct = (): void => {
     this.server = net.createServer();
 
-    this.server.on('connection', socket => {
+    this.server.on('connection', (socket: net$Socket) => {
       const formatter = new ResponseFormatter(this.config.rootDir);
 
       socket.on('data', data => {
@@ -40,7 +41,7 @@ export default class EssentialHttpServer {
     }
 
     this.server.listen({ port: this.config.port }, () => {
-      global.console.log(`Server is running on port ${this.config.port}`);
+      global.console.log(`Server is running on ${this.config.port} port`);
     });
   };
 

@@ -1,39 +1,50 @@
+// @flow
+/* eslint-disable array-callback-return */
+
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import { REQUEST_START_LINE_REGEXP, REQUEST_HEADER_REGEXP } from '../config/formatter';
+import {
+  REQUEST_START_LINE_REGEXP,
+  REQUEST_HEADER_REGEXP,
+} from '../config/formatter';
 import setContentType from '../helper/contentType';
+import type { ResponseFormatterConfigType } from '../type/serviceTypes';
 
 const openAsync = promisify(fs.open);
 const readFileAsync = promisify(fs.readFile);
 
 export default class ResponseFormatter {
+  config: ResponseFormatterConfigType;
 
-  constructor(rootDir, charset = 'utf-8') {
-    this.config = {rootDir, charset};
+  constructor(rootDir: string, charset: string = 'utf-8') {
+    this.config = { rootDir, charset };
 
-    return {send: this.send};
+    return { send: this.send };
   }
 
-  send = (data, socket) => {
+  send = (data: ArrayBuffer, socket: net$Socket) => {
     const request = this.parseRequest(data);
 
     this.buildResponse(request, socket);
   };
 
-  parseRequest = (data) => {
+  parseRequest = (data: ArrayBuffer): Object => {
+    // $FlowFixMe
     const decodedRequest = data.toString(this.config.charset);
     let request = {
-      headers: {}
+      headers: {},
     };
     const requestParts = decodedRequest.trim().split('\r\n');
 
     requestParts.forEach(part => {
-      if(REQUEST_START_LINE_REGEXP.test(part)) {
+      if (REQUEST_START_LINE_REGEXP.test(part)) {
+        // $FlowFixMe
         const [, method, uri, version] = part.match(REQUEST_START_LINE_REGEXP);
 
-        request = {...request, method, uri, version};
-      } else if(REQUEST_HEADER_REGEXP.test(part)) {
+        request = { ...request, method, uri, version };
+      } else if (REQUEST_HEADER_REGEXP.test(part)) {
+        // $FlowFixMe
         const [, property, value] = part.match(REQUEST_HEADER_REGEXP);
 
         request.headers[property] = value;
@@ -45,55 +56,59 @@ export default class ResponseFormatter {
     return request;
   };
 
-  read = filePath => new Promise(async (resolve, reject) => {
-    try {
-      await openAsync(filePath, 'r');
-      const file = await readFileAsync(filePath);
+  read = (filePath: string): Promise<Function> =>
+    new Promise(async (resolve, reject) => {
+      try {
+        await openAsync(filePath, 'r');
+        const file = await readFileAsync(filePath);
 
-      resolve(file);
-    } catch(error) {
-      reject(error);
-    }
-  });
+        resolve(file);
+      } catch (error) {
+        reject(error);
+      }
+    });
 
-  buildResponse = async (request, socket) => {
+  buildResponse = async (request: Object, socket: net$Socket) => {
     const requestFile = this.config.rootDir + request.uri;
 
     try {
-      const fileData = await this.read(requestFile);
+      const fileData: ArrayBuffer = await this.read(requestFile);
       const fileType = path.extname(requestFile).replace(/\./, '');
       const response = this.prepareResponse(request, fileData, 200, fileType);
 
       this.sendResponse(response, socket);
-    } catch(error) {
+    } catch (error) {
       const response = this.prepareResponse(request, 'File not found', 404);
 
       this.sendResponse(response, socket);
     }
   };
 
-  prepareResponse = (request, body, code, requestFileType = null) => {
-    let response = {...request};
+  prepareResponse = (
+    request: Object,
+    body: ArrayBuffer | string,
+    code: number,
+    requestFileType?: string | null = null,
+  ): Object => {
+    let response = { ...request };
 
-    if(requestFileType) {
+    if (requestFileType) {
       response.headers['content-type'] = setContentType(requestFileType);
     }
 
-    response = {...response, body, code};
+    response = { ...response, body, code };
 
     return response;
   };
 
-  sendResponse = (response, socket) => {
+  sendResponse = (response: Object, socket: net$Socket): void => {
     socket.write(`${response.version}: ${response.code}\r\n`);
 
-    for(const header in response.header) {
-      socket.write(`${header}: ${response.headers[header]}\r\n`);
-    }
+    Object.keys(response.headers).map(key => {
+      socket.write(`${key}: ${response.headers[key]}\r\n`);
+    });
 
     socket.write('\r\n');
-
     socket.end(response.body);
   };
-
 }
