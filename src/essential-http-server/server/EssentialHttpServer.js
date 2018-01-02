@@ -1,37 +1,23 @@
 /* @flow */
-
 import net from 'net';
-import type defaultConfig from '../config/server';
+import defaultConfig  from '../config/server';
 import ResponseFormatter from '../service/ResponseFormatter';
-
-type ServerConfigType = {
-  port?: number,
-  rootDir?: string,
-  handleRobots?: boolean,
-};
-
-interface ServerInterface {
-  config: ServerConfigType;
-}
+import type { ServerConfigType } from '../type/serverTypes';
 
 export const STATUS_RUNNED = 'runned';
 export const STATUS_HALT = 'halt';
 
 export default class EssentialHttpServer {
   config: ServerConfigType;
+  isStarted: boolean;
+  server: Object;
+
+  static isStarted = false;
 
   constructor(config: ServerConfigType) {
     this.config = { ...defaultConfig, ...config };
-    this.isStarted = false;
 
     this.construct();
-
-    return {
-      start: this.start,
-      stop: this.stop,
-      restart: this.restart,
-      getStatus: this.getStatus,
-    };
   }
 
   construct = (): void => {
@@ -54,7 +40,7 @@ export default class EssentialHttpServer {
     }
 
     this.server.listen({ port: this.config.port }, () => {
-      global.console.log(`Server is running. PORT ${this.server.address()}`);
+      global.console.log(`Server is running on port ${this.config.port}`);
     });
   };
 

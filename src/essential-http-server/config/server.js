@@ -1,7 +1,10 @@
 // @flow
+import type { ServerConfigType } from '../type/serverTypes';
 
-export default {
-  port: process.env.PORT || 3000,
+const config: ServerConfigType = {
+  port: 3000,
   rootDir: __dirname,
   handleRobots: false,
 };
+
+export default config;
