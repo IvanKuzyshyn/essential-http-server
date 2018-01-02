@@ -18,6 +18,10 @@ export default class EssentialHttpServer {
   constructor(config: ServerConfigType) {
     this.config = { ...defaultConfig, ...config };
 
+    if(!this.config.rootDir) {
+      throw new Error('Undefined root directory!');
+    }
+
     this.construct();
   }
 
@@ -33,7 +37,7 @@ export default class EssentialHttpServer {
     });
   };
 
-  start = (): void => {
+  start = (callback?: Function): void => {
     if (this.isStarted) {
       global.console.warn('Server has been already started!');
 
@@ -42,14 +46,35 @@ export default class EssentialHttpServer {
 
     this.server.listen({ port: this.config.port }, () => {
       global.console.log(`Server is running on ${this.config.port} port`);
+
+      this.isStarted = true;
+
+      if (callback && typeof callback === 'function') {
+        callback();
+      }
     });
   };
 
-  stop = (): void => {};
+  stop = (callback?: Function): void => {
+    if (!this.isStarted) {
+      return;
+    }
 
-  restart = (): void => {
-    this.stop();
-    this.start();
+    this.server.close(() => {
+      global.console.log('Server is closed!');
+
+      this.isStarted = false;
+
+      if (callback && typeof callback === 'function') {
+        callback();
+      }
+    });
+  };
+
+  restart = (callback?: Function): void => {
+    this.stop(() => {
+        this.start(callback);
+    });
   };
 
   getStatus = (): string => {

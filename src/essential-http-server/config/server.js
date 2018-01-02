@@ -2,9 +2,8 @@
 
 import type { ServerConfigType } from '../type/serverTypes';
 
-const config: ServerConfigType = {
+const config = {
   port: 3000,
-  rootDir: __dirname,
   handleRobots: false,
 };
 
